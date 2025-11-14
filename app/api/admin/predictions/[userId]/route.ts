@@ -9,14 +9,15 @@ export async function OPTIONS() {
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   // Check authentication
   const authResult = checkAdminAuth(request)
   if (authResult) return authResult
 
   try {
-    const userId = parseInt(params.userId)
+    const { userId: userIdParam } = await params
+    const userId = parseInt(userIdParam)
 
     if (isNaN(userId)) {
       return addCorsHeaders(
