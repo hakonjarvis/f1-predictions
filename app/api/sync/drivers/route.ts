@@ -64,10 +64,9 @@ export async function POST(request: NextRequest) {
         where: { name: openDriver.team_name },
         create: {
           name: openDriver.team_name,
-          constructor: openDriver.team_name,
         },
         update: {
-          constructor: openDriver.team_name,
+          name: openDriver.team_name,
         },
       })
 
