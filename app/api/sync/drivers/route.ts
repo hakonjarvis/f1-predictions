@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       })
 
       // Upsert team first
-      await prisma.team.upsert({
+      const team = await prisma.team.upsert({
         where: { name: openDriver.team_name },
         create: {
           name: openDriver.team_name,
