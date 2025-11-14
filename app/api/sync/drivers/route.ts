@@ -59,8 +59,13 @@ export async function POST(request: NextRequest) {
 
     // Process each driver
     for (const openDriver of openF1Drivers) {
+      // Check if team exists before upsert
+      const existingTeam = await prisma.team.findUnique({
+        where: { name: openDriver.team_name },
+      })
+
       // Upsert team first
-      const team = await prisma.team.upsert({
+      await prisma.team.upsert({
         where: { name: openDriver.team_name },
         create: {
           name: openDriver.team_name,
@@ -70,7 +75,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      if (!team.createdAt) {
+      if (existingTeam) {
         results.teamsUpdated++
       } else {
         results.teamsCreated++
