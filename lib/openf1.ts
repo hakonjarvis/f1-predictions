@@ -45,7 +45,10 @@ export interface OpenF1Position {
 export async function fetchDrivers(sessionKey: number): Promise<OpenF1Driver[]> {
   const response = await fetch(`${OPENF1_BASE_URL}/drivers?session_key=${sessionKey}`)
   if (!response.ok) {
-    throw new Error(`OpenF1 API error: ${response.statusText}`)
+    if (response.status === 429) {
+      throw new Error(`OpenF1 API rate limit exceeded. Please wait a moment and try again.`)
+    }
+    throw new Error(`OpenF1 API error: ${response.status} ${response.statusText}`)
   }
   return response.json()
 }
@@ -56,7 +59,10 @@ export async function fetchDrivers(sessionKey: number): Promise<OpenF1Driver[]> 
 export async function fetchSessions(year: number): Promise<OpenF1Session[]> {
   const response = await fetch(`${OPENF1_BASE_URL}/sessions?year=${year}`)
   if (!response.ok) {
-    throw new Error(`OpenF1 API error: ${response.statusText}`)
+    if (response.status === 429) {
+      throw new Error(`OpenF1 API rate limit exceeded. Please wait a moment and try again.`)
+    }
+    throw new Error(`OpenF1 API error: ${response.status} ${response.statusText}`)
   }
   return response.json()
 }

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(validatedYear)
     }
 
-    // Get all race sessions for the year to ensure we get all drivers
+    // Get race sessions for the year
     const raceSessions = await fetchRaceSessions(validatedYear)
 
     if (raceSessions.length === 0) {
@@ -36,18 +36,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Collect all unique drivers from all sessions
-    const allDriversMap = new Map()
+    // Use only the latest session to avoid rate limiting
+    // All current drivers should be in the most recent session
+    const latestSession = raceSessions[raceSessions.length - 1]
 
-    for (const session of raceSessions) {
-      const sessionDrivers = await fetchDrivers(session.session_key)
-      for (const driver of sessionDrivers) {
-        // Use driver number as unique key
-        allDriversMap.set(driver.driver_number, driver)
-      }
-    }
+    console.log(`Fetching drivers from latest session: ${latestSession.session_key} (${latestSession.session_name})`)
 
-    const openF1Drivers = Array.from(allDriversMap.values())
+    const openF1Drivers = await fetchDrivers(latestSession.session_key)
 
     // Track results
     const results = {
