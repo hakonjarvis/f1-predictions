@@ -43,12 +43,27 @@ export default function AdminPredictionsPage() {
     }
   }, [])
 
-  function handlePasswordSubmit(e: React.FormEvent) {
+  async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (adminPassword) {
-      sessionStorage.setItem('adminPassword', adminPassword)
-      setIsAuthenticated(true)
-      fetchUsers(adminPassword)
+      // Verify password by making a test API call
+      const response = await fetch('/api/admin/predictions', {
+        headers: {
+          'Authorization': `Bearer ${adminPassword}`,
+        },
+      })
+
+      if (response.ok) {
+        sessionStorage.setItem('adminPassword', adminPassword)
+        setIsAuthenticated(true)
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          setUsers(data)
+        }
+        setLoading(false)
+      } else {
+        alert('Ugyldig passord')
+      }
     }
   }
 

@@ -29,11 +29,26 @@ export default function SyncPage() {
     }
   }, [])
 
-  function handlePasswordSubmit(e: React.FormEvent) {
+  async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (adminPassword) {
-      sessionStorage.setItem('adminPassword', adminPassword)
-      setIsAuthenticated(true)
+      // Verify password by making a test API call
+      try {
+        const response = await fetch('/api/admin/predictions', {
+          headers: {
+            'Authorization': `Bearer ${adminPassword}`,
+          },
+        })
+
+        if (response.ok) {
+          sessionStorage.setItem('adminPassword', adminPassword)
+          setIsAuthenticated(true)
+        } else {
+          alert('Ugyldig passord')
+        }
+      } catch (error) {
+        alert('Kunne ikke verifisere passord')
+      }
     }
   }
 
