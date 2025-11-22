@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import { fetchRaceSessions, fetchDrivers } from '@/lib/openf1'
 import { checkAdminAuth } from '@/lib/auth'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
@@ -55,20 +55,10 @@ export async function POST(request: NextRequest) {
     // Process each driver
     for (const openDriver of openF1Drivers) {
       // Check if team exists before upsert
-      const existingTeam = await prisma.team.findUnique({
-        where: { name: openDriver.team_name },
-      })
+      const existingTeam = await dbHelpers.getTeamByName(openDriver.team_name)
 
       // Upsert team first
-      const team = await prisma.team.upsert({
-        where: { name: openDriver.team_name },
-        create: {
-          name: openDriver.team_name,
-        },
-        update: {
-          name: openDriver.team_name,
-        },
-      })
+      const team = await dbHelpers.upsertTeam(openDriver.team_name)
 
       if (existingTeam) {
         results.teamsUpdated++
@@ -77,33 +67,21 @@ export async function POST(request: NextRequest) {
       }
 
       // Upsert driver
-      const existingDriver = await prisma.driver.findUnique({
-        where: { code: openDriver.name_acronym },
+      const existingDriver = await dbHelpers.getDriverByCode(openDriver.name_acronym)
+
+      const driverResult = await dbHelpers.upsertDriver({
+        name: openDriver.full_name,
+        code: openDriver.name_acronym,
+        number: openDriver.driver_number,
+        country: openDriver.country_code,
+        headshotUrl: openDriver.headshot_url,
+        teamId: team.id,
       })
 
-      await prisma.driver.upsert({
-        where: { code: openDriver.name_acronym },
-        create: {
-          name: openDriver.full_name,
-          code: openDriver.name_acronym,
-          number: openDriver.driver_number,
-          country: openDriver.country_code,
-          headshotUrl: openDriver.headshot_url,
-          teamId: team.id,
-        },
-        update: {
-          name: openDriver.full_name,
-          number: openDriver.driver_number,
-          country: openDriver.country_code,
-          headshotUrl: openDriver.headshot_url,
-          teamId: team.id,
-        },
-      })
-
-      if (existingDriver) {
-        results.driversUpdated++
-      } else {
+      if (driverResult.isNew) {
         results.driversCreated++
+      } else {
+        results.driversUpdated++
       }
     }
 

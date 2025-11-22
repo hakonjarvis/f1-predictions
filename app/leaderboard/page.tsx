@@ -1,19 +1,13 @@
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import { calculateTotalPoints, calculatePointsPerRace } from '@/lib/points'
 import Link from 'next/link'
 import LeaderboardClient from './LeaderboardClient'
 
 export default async function LeaderboardPage() {
   // Hent brukere med gjetninger og løpsresultater
-  const users = await prisma.user.findMany({
-    include: {
-      prediction: {
-        include: { predictions: true },
-      },
-    },
-  })
+  const users = await dbHelpers.getAllUsersWithPredictions()
 
-  const raceResults = await prisma.raceResult.findMany()
+  const raceResults = await dbHelpers.getAllRaceResults()
 
   const leaderboard = users
     .filter((user) => user.prediction) // Only show users who have submitted predictions

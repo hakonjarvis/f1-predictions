@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 
 export async function GET() {
   try {
-    const drivers = await prisma.driver.findMany({
-      include: {
-        team: true,
-      },
-      orderBy: {
-        number: 'asc',
-      },
-    })
+    const drivers = await dbHelpers.getDrivers()
 
     return NextResponse.json(drivers)
   } catch (error) {

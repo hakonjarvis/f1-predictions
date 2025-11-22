@@ -1,18 +1,12 @@
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import { calculateTotalPoints, calculatePointsPerRace } from '@/lib/points'
 import Link from 'next/link'
 
 export default async function HomePage() {
   // Hent topp 5 brukere for leaderboard preview
-  const users = await prisma.user.findMany({
-    include: {
-      prediction: {
-        include: { predictions: true },
-      },
-    },
-  })
+  const users = await dbHelpers.getAllUsersWithPredictions()
 
-  const raceResults = await prisma.raceResult.findMany()
+  const raceResults = await dbHelpers.getAllRaceResults()
 
   // Calculate current leaderboard
   const currentLeaderboard = users

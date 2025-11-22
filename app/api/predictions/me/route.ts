@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 import { createClient } from '@/lib/supabase/server'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
 
@@ -23,27 +23,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Find user's prediction
-    const user = await prisma.user.findUnique({
-      where: { authId: authUser.id },
-      include: {
-        prediction: {
-          include: {
-            predictions: {
-              include: {
-                driver: {
-                  include: {
-                    team: true,
-                  },
-                },
-              },
-              orderBy: {
-                predictedPosition: 'asc',
-              },
-            },
-          },
-        },
-      },
-    })
+    const { data: user, error } = await db
+      .from('User')
+      .select(`
+        *,
+        prediction:SeasonPrediction(
+          *,
+          predictions:DriverPrediction(
+            *,
+            driver:Driver(
+              *,
+              team:Team(*)
+            )
+          )
+        )
+      `)
+      .eq('authId', authUser.id)
+      .order('predictedPosition', { foreignTable: 'SeasonPrediction.DriverPrediction', ascending: true })
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      throw error
+    }
 
     if (!user?.prediction) {
       return addCorsHeaders(

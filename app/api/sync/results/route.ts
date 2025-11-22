@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import {
   fetchRaceSessions,
   fetchSessionResults,
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         const positions = await fetchSessionResults(session.session_key)
 
         // Get all drivers to map numbers to IDs
-        const drivers = await prisma.driver.findMany()
+        const drivers = await dbHelpers.getAllDrivers()
         const driverMap = new Map(drivers.map((d) => [d.number, d]))
 
         // Process each position
@@ -125,43 +125,20 @@ export async function POST(request: NextRequest) {
           const points = getPointsForPosition(pos.position)
 
           // Upsert race result
-          const existingResult = await prisma.raceResult.findUnique({
-            where: {
-              sessionKey_driverId: {
-                sessionKey: session.session_key,
-                driverId: driver.id,
-              },
-            },
+          const resultData = await dbHelpers.upsertRaceResult({
+            raceName: session.location,
+            round: session.round,
+            year: session.year,
+            sessionKey: session.session_key,
+            driverId: driver.id,
+            position: pos.position,
+            points,
           })
 
-          await prisma.raceResult.upsert({
-            where: {
-              sessionKey_driverId: {
-                sessionKey: session.session_key,
-                driverId: driver.id,
-              },
-            },
-            create: {
-              raceName: session.location,
-              round: session.round,
-              year: session.year,
-              sessionKey: session.session_key,
-              driverId: driver.id,
-              position: pos.position,
-              points,
-            },
-            update: {
-              raceName: session.location,
-              round: session.round,
-              position: pos.position,
-              points,
-            },
-          })
-
-          if (existingResult) {
-            results.resultsUpdated++
-          } else {
+          if (resultData.isNew) {
             results.resultsCreated++
+          } else {
+            results.resultsUpdated++
           }
         }
 

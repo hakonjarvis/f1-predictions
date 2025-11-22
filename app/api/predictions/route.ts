@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
 import { checkRateLimit } from '@/lib/ratelimit'
 import { createClient } from '@/lib/supabase/server'
@@ -45,10 +45,7 @@ export async function POST(request: NextRequest) {
     const email = authUser.email!
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { authId: authUser.id },
-      include: { prediction: true },
-    })
+    const existingUser = await dbHelpers.getUserByAuthId(authUser.id)
 
     if (existingUser?.prediction) {
       return addCorsHeaders(
@@ -60,38 +57,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Create or update user with authId
-    const user = await prisma.user.upsert({
-      where: { authId: authUser.id },
-      create: {
-        authId: authUser.id,
-        name,
-        email,
-      },
-      update: {
-        name,
-        email,
-      },
-    })
+    let user
+    if (existingUser) {
+      user = await dbHelpers.updateUser(authUser.id, name, email)
+    } else {
+      user = await dbHelpers.createUser(authUser.id, name, email)
+    }
 
     // Create season prediction with driver predictions
-    const seasonPrediction = await prisma.seasonPrediction.create({
-      data: {
-        userId: user.id,
-        predictions: {
-          create: predictions.map((pred: { driverId: number; position: number }) => ({
-            driverId: pred.driverId,
-            predictedPosition: pred.position,
-          })),
-        },
-      },
-      include: {
-        predictions: {
-          include: {
-            driver: true,
-          },
-        },
-      },
-    })
+    const seasonPrediction = await dbHelpers.createSeasonPrediction(
+      user.id,
+      predictions.map((pred: { driverId: number; position: number }) => ({
+        driverId: pred.driverId,
+        position: pred.position,
+      }))
+    )
 
     return addCorsHeaders(
       NextResponse.json({
