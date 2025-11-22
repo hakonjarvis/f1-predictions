@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { dbHelpers } from '@/lib/db'
 import { checkAdminAuth } from '@/lib/auth'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
@@ -30,6 +31,10 @@ export async function DELETE(
 
     // Delete the prediction (cascade will handle driver predictions)
     await dbHelpers.deletePrediction(userId)
+
+    // Revalidate pages that display predictions
+    revalidatePath('/')
+    revalidatePath('/leaderboard')
 
     return addCorsHeaders(
       NextResponse.json({

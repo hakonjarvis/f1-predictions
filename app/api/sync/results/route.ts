@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { dbHelpers } from '@/lib/db'
 import {
   fetchRaceSessions,
@@ -149,6 +150,10 @@ export async function POST(request: NextRequest) {
         )
       }
     }
+
+    // Revalidate pages that display race results and points
+    revalidatePath('/')
+    revalidatePath('/leaderboard')
 
     return addCorsHeaders(
       NextResponse.json({

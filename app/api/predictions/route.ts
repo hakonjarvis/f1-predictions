@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { dbHelpers } from '@/lib/db'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
 import { checkRateLimit } from '@/lib/ratelimit'
@@ -72,6 +73,10 @@ export async function POST(request: NextRequest) {
         position: pred.position,
       }))
     )
+
+    // Revalidate pages that display predictions
+    revalidatePath('/')
+    revalidatePath('/leaderboard')
 
     return addCorsHeaders(
       NextResponse.json({
