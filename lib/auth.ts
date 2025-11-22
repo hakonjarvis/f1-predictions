@@ -9,11 +9,6 @@ import { NextRequest, NextResponse } from 'next/server'
  * if (authResult) return authResult // Returns 401 if auth fails
  */
 export function checkAdminAuth(request: NextRequest): NextResponse | null {
-  // TEMPORARILY DISABLED FOR DEBUGGING
-  // TODO: Re-enable authentication after debugging
-  return null
-
-  /* COMMENTED OUT FOR DEBUGGING
   const authHeader = request.headers.get('authorization')
   const adminPassword = process.env.ADMIN_PASSWORD
 
@@ -44,5 +39,4 @@ export function checkAdminAuth(request: NextRequest): NextResponse | null {
 
   // Auth successful
   return null
-  */
 }
