@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import { checkAdminAuth } from '@/lib/auth'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
 
@@ -28,34 +28,8 @@ export async function DELETE(
       )
     }
 
-    // Find the user's prediction
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { prediction: true },
-    })
-
-    if (!user) {
-      return addCorsHeaders(
-        NextResponse.json(
-          { error: 'User not found' },
-          { status: 404 }
-        )
-      )
-    }
-
-    if (!user.prediction) {
-      return addCorsHeaders(
-        NextResponse.json(
-          { error: 'User has no prediction to delete' },
-          { status: 404 }
-        )
-      )
-    }
-
-    // Delete the season prediction (this will cascade delete driver predictions)
-    await prisma.seasonPrediction.delete({
-      where: { id: user.prediction.id },
-    })
+    // Delete the prediction (cascade will handle driver predictions)
+    await dbHelpers.deletePrediction(userId)
 
     return addCorsHeaders(
       NextResponse.json({

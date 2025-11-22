@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { dbHelpers } from '@/lib/db'
 import { checkAdminAuth } from '@/lib/auth'
 import { addCorsHeaders, handleCorsPrelight } from '@/lib/cors'
 
@@ -13,23 +13,7 @@ export async function GET(request: NextRequest) {
   if (authResult) return authResult
 
   try {
-    const users = await prisma.user.findMany({
-      include: {
-        prediction: {
-          include: {
-            predictions: {
-              include: {
-                driver: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
-
+    const users = await dbHelpers.getAllUsersWithPredictions()
     return addCorsHeaders(NextResponse.json(users))
   } catch (error) {
     console.error('Error fetching predictions:', error)
