@@ -4,7 +4,29 @@ Quick reference for deploying the F1 Predictions application to production.
 
 ## Pre-Deployment Checklist
 
-### 1. Environment Variables
+### 1. Local Testing
+
+**⚠️ CRITICAL: Test all changes locally before deploying to production.**
+
+```bash
+# 1. Run development server
+npm run dev
+
+# 2. Test your changes at http://localhost:3000
+# - Test the specific feature you changed
+# - Test related features that might be affected
+# - For admin features: test /admin/sync and /admin/predictions
+
+# 3. Build and test production build
+npm run build
+npm start
+
+# 4. Verify build succeeds without errors
+```
+
+**Never deploy untested code to production.**
+
+### 2. Environment Variables
 
 Set these in your production environment (Vercel, Railway, etc.):
 
@@ -16,7 +38,7 @@ ADMIN_PASSWORD="<generate-strong-random-password>"
 # Optional but recommended
 ALLOWED_ORIGIN="https://yourdomain.com"
 
-# If using Supabase (currently not required)
+# Supabase (Required)
 NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
 ```
@@ -26,27 +48,24 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
 openssl rand -base64 32
 ```
 
-### 2. Database Setup
+### 3. Database Setup
 
-1. **Create PostgreSQL database** (Supabase, Neon, Railway, etc.)
-2. **Apply migrations:**
-   ```bash
-   npx prisma migrate deploy
-   ```
-3. **Verify connection:**
-   ```bash
-   npx prisma db pull
-   ```
+The database is managed directly in Supabase:
 
-### 3. Security Actions
+1. **Create Supabase project** at https://supabase.com
+2. **Set up database schema** using Supabase SQL editor
+3. **Copy connection details:**
+   - Get Supabase URL and anon key from project settings
+   - Add them to your environment variables
+
+### 4. Security Actions
 
 - [ ] Generate and set `ADMIN_PASSWORD` in production
-- [ ] Rotate database password (current one in `.env` was exposed)
 - [ ] Set `ALLOWED_ORIGIN` to your production domain
 - [ ] Verify `.env` is NOT committed to git
 - [ ] Review `SECURITY.md` for additional hardening
 
-### 4. Build Test
+### 5. Build Test
 
 Test the production build locally:
 
@@ -65,25 +84,21 @@ Visit `http://localhost:3000` and verify:
 
 ### Vercel (Recommended for Next.js)
 
-1. **Install Vercel CLI:**
+1. **Test locally first** (see Pre-Deployment Checklist above)
+
+2. **Install Vercel CLI:**
    ```bash
    npm i -g vercel
    ```
 
-2. **Deploy:**
+3. **Deploy:**
    ```bash
-   vercel
+   vercel --prod
    ```
 
-3. **Set environment variables:**
+4. **Set environment variables:**
    - Go to Project Settings → Environment Variables
-   - Add `DATABASE_URL`, `ADMIN_PASSWORD`, `ALLOWED_ORIGIN`
-
-4. **Apply database migrations:**
-   - Use Vercel CLI or dashboard to run:
-     ```bash
-     npx prisma migrate deploy
-     ```
+   - Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `ADMIN_PASSWORD`, `ALLOWED_ORIGIN`
 
 ### Railway
 
@@ -141,13 +156,10 @@ To update race results after each race:
 
 ### Database Connection Issues
 
-```bash
-# Test connection locally
-npx prisma db pull
-
-# Check connection string format
-# Should be: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-```
+- Verify Supabase credentials in environment variables
+- Check Supabase project is active and not paused
+- Test connection through Supabase dashboard
+- Ensure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are correct
 
 ### Build Failures
 
@@ -155,8 +167,9 @@ npx prisma db pull
 # Clear Next.js cache
 rm -rf .next
 
-# Regenerate Prisma Client
-npx prisma generate
+# Clear node modules and reinstall
+rm -rf node_modules
+npm install
 
 # Rebuild
 npm run build

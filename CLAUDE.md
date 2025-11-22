@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an F1 Predictions application built with Next.js 16 (App Router), React 19, TypeScript, Prisma ORM, and PostgreSQL. Users can submit predictions for F1 driver championship standings and compete on a leaderboard based on accuracy.
+This is an F1 Predictions application built with Next.js 16 (App Router), React 19, TypeScript, Supabase, and PostgreSQL. Users can submit predictions for F1 driver championship standings and compete on a leaderboard based on accuracy.
 
 The application is in Norwegian (metadata shows `lang="no"`), so UI text and database content are primarily in Norwegian.
 
@@ -22,20 +22,32 @@ npm start
 
 # Run linter
 npm run lint
-
-# Prisma database commands
-npx prisma generate        # Generate Prisma Client after schema changes
-npx prisma migrate dev     # Create and apply migrations in development
-npx prisma migrate deploy  # Apply migrations in production
-npx prisma studio         # Open Prisma Studio GUI for database management
-npx prisma db push        # Push schema changes without migrations (dev only)
 ```
+
+## Testing and Deployment Workflow
+
+**⚠️ CRITICAL: Always test changes locally before deploying to production.**
+
+Follow this workflow for all code changes:
+
+1. **Make changes locally** and verify the dev server runs without errors
+2. **Test the functionality** in the browser at http://localhost:3000
+   - Test the specific feature you changed
+   - Test related features that might be affected
+   - For admin features: test at http://localhost:3000/admin/sync and /admin/predictions
+3. **Run the build** to check for TypeScript errors: `npm run build`
+4. **Commit your changes** with a descriptive message
+5. **Push to GitHub**: `git push`
+6. **Deploy to production** only after local testing is successful: `vercel --prod`
+7. **Verify in production** that the changes work as expected
+
+**Never skip local testing.** Production bugs are harder to debug and affect real users.
 
 ## Architecture
 
-### Database Layer (Prisma + PostgreSQL)
+### Database Layer (Supabase + PostgreSQL)
 
-The data model (`prisma/schema.prisma`) represents:
+The database schema is managed directly in Supabase. The data model represents:
 - **User**: Users who make predictions (can link to Supabase auth via `authId`)
 - **Team** & **Driver**: F1 teams and drivers
 - **SeasonPrediction**: A user's prediction set for the season
@@ -48,6 +60,8 @@ Key relationships:
 - Each SeasonPrediction contains multiple DriverPredictions
 - Drivers belong to Teams and have RaceResults
 
+**Important Supabase Note**: One-to-one relations are returned as arrays by default. The `lib/db.ts` helper functions transform these to single objects for frontend compatibility.
+
 ### Application Structure
 
 **Next.js App Router** (React Server Components by default):
@@ -56,7 +70,9 @@ Key relationships:
 - `app/layout.tsx`: Root layout with Norwegian locale
 
 **Shared Libraries**:
-- `lib/prisma.ts`: Singleton Prisma Client instance with development HMR handling
+- `lib/db.ts`: Supabase client and database helper functions
+  - Transforms Supabase nested relations from arrays to single objects
+  - Provides helper methods for common database operations
 - `lib/points.ts`: Points calculation logic
   - `calculatePointsForRace()`: Scores predictions vs race results (25 pts for exact, decreasing with larger diffs)
   - `calculateTotalPoints()`: Aggregates all race points for a user
@@ -75,7 +91,7 @@ Points are awarded based on position prediction accuracy:
 - Using **@dnd-kit** for drag-and-drop driver reordering in predictions
 - Tailwind CSS for styling (v4 with PostCSS)
 - Client components (marked with `"use client"`) for interactive features
-- Server components for data fetching with Prisma
+- Server components for data fetching with Supabase
 
 ## Data Syncing with OpenF1 API
 
@@ -128,8 +144,9 @@ See `SECURITY.md` for complete security documentation including:
 
 ## Important Notes
 
-- The Prisma Client generation output is excluded via `.gitignore` (`/app/generated/prisma`)
-- Prisma Client singleton pattern prevents multiple instances during hot reload
-- After schema changes, run `npx prisma migrate dev` to create migrations
+- **Always test changes locally before deploying to production** (see Testing and Deployment Workflow above)
+- The app uses Supabase client (pure JavaScript, no binary dependencies) to avoid serverless function limitations
+- Supabase returns one-to-one relations as arrays - database helper functions in `lib/db.ts` transform these for frontend compatibility
 - Never commit the `.env` file - it contains sensitive credentials
 - Use `.env.example` as a template for required variables
+- Database schema is managed directly in Supabase dashboard

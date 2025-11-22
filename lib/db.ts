@@ -25,7 +25,15 @@ export const dbHelpers = {
       .order('createdAt', { ascending: false })
 
     if (error) throw error
-    return users
+
+    // Transform: convert prediction array to single object or null
+    // Supabase returns one-to-one relations as arrays, but frontend expects single object
+    return users?.map(user => ({
+      ...user,
+      prediction: Array.isArray(user.prediction) && user.prediction.length > 0
+        ? user.prediction[0]
+        : null
+    })) || []
   },
 
   async getDrivers() {
@@ -55,6 +63,14 @@ export const dbHelpers = {
       .single()
 
     if (error && error.code !== 'PGRST116') throw error // PGRST116 is "not found"
+
+    // Transform: convert prediction array to single object or null
+    if (data && Array.isArray(data.prediction) && data.prediction.length > 0) {
+      data.prediction = data.prediction[0]
+    } else if (data) {
+      data.prediction = null
+    }
+
     return data
   },
 
