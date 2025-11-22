@@ -1,14 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('@prisma/client', 'prisma')
-    }
-    return config
-  },
+  serverExternalPackages: ['@prisma/client', 'prisma'],
+  turbopack: {},
 }
 
 module.exports = nextConfig
