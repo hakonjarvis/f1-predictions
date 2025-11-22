@@ -1,4 +1,16 @@
-import { DriverPrediction, RaceResult } from '@prisma/client'
+// Types matching our Supabase database schema
+interface DriverPrediction {
+  driverId: number
+  predictedPosition: number
+}
+
+interface RaceResult {
+  driverId: number
+  position: number
+  raceName: string
+  round: number
+  sessionKey?: number | null
+}
 
 export function calculatePointsForRace(
   predictions: DriverPrediction[],
