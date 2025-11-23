@@ -141,9 +141,9 @@ export default function AdminPredictionsPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-md mx-auto p-6">
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-8">
-          <h1 className="text-2xl font-semibold text-white mb-6">Admin Login</h1>
+      <div className="max-w-md mx-auto p-4 md:p-6">
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6 md:p-8">
+          <h1 className="text-xl md:text-2xl font-semibold text-white mb-6">Admin Login</h1>
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-zinc-400">
@@ -172,26 +172,26 @@ export default function AdminPredictionsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-4xl mx-auto p-4 md:p-6">
         <p className="text-zinc-400">Laster predictions...</p>
       </div>
     )
   }
 
   return (
-    <div className="w-full px-6 py-6">
-      <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-semibold text-white">Admin: Predictions</h1>
-        <div className="flex gap-4">
+    <div className="w-full px-4 md:px-6 py-4 md:py-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 max-w-7xl mx-auto">
+        <h1 className="text-xl md:text-2xl font-semibold text-white">Admin: Predictions</h1>
+        <div className="flex gap-3 md:gap-4">
           <Link
             href="/admin/sync"
-            className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors"
+            className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors whitespace-nowrap"
           >
             ← Tilbake til Sync
           </Link>
           <button
             onClick={logout}
-            className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors"
+            className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors"
           >
             Logout
           </button>
@@ -202,33 +202,33 @@ export default function AdminPredictionsPage() {
         <table className="w-full">
           <thead className="border-b border-zinc-800">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 Navn
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="hidden sm:table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 E-post
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="hidden md:table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 Opprettet
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                Handlinger
+              <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800">
             {users.map((user) => (
               <tr key={user.id} className="hover:bg-zinc-800/50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-zinc-200">{user.name}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-zinc-400">{user.email}</div>
+                <td className="hidden sm:table-cell px-3 md:px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-zinc-400 max-w-[150px] truncate">{user.email}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                   {user.prediction ? (
                     <span className="px-2 inline-flex text-xs leading-5 font-medium rounded bg-green-900/30 text-green-400 border border-green-800">
                       Levert
@@ -239,24 +239,24 @@ export default function AdminPredictionsPage() {
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
+                <td className="hidden md:table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
                   {user.prediction
                     ? new Date(user.prediction.createdAt).toLocaleDateString('no-NO')
                     : '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="px-3 md:px-6 py-4 whitespace-nowrap text-xs md:text-sm font-medium">
                   {user.prediction ? (
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                       <button
                         onClick={() => setSelectedUser(user)}
-                        className="text-zinc-300 hover:text-white transition-colors"
+                        className="text-zinc-300 hover:text-white transition-colors whitespace-nowrap"
                       >
-                        Vis detaljer
+                        Detaljer
                       </button>
                       <button
                         onClick={() => deletePrediction(user.id)}
                         disabled={deleting === user.id}
-                        className="text-red-400 hover:text-red-300 disabled:text-zinc-600 disabled:cursor-not-allowed transition-colors"
+                        className="text-red-400 hover:text-red-300 disabled:text-zinc-600 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                       >
                         {deleting === user.id ? 'Sletter...' : 'Slett'}
                       </button>
@@ -281,21 +281,21 @@ export default function AdminPredictionsPage() {
       {selectedUser && selectedUser.prediction && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-lg md:text-xl font-semibold text-white">
                   Prediction fra {selectedUser.name}
                 </h2>
                 <button
                   onClick={() => setSelectedUser(null)}
-                  className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="text-zinc-500 hover:text-zinc-300 transition-colors text-xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="mb-6">
-                <p className="text-sm text-zinc-400">
+              <div className="mb-6 space-y-1">
+                <p className="text-sm text-zinc-400 break-all">
                   E-post: {selectedUser.email}
                 </p>
                 <p className="text-sm text-zinc-400">
@@ -311,14 +311,14 @@ export default function AdminPredictionsPage() {
                   .map((pred) => (
                     <div
                       key={pred.id}
-                      className="flex items-center gap-3 bg-zinc-800/50 border border-zinc-800 rounded p-3"
+                      className="flex items-center gap-2 md:gap-3 bg-zinc-800/50 border border-zinc-800 rounded p-2 md:p-3"
                     >
-                      <div className="flex-shrink-0 w-8 h-8 bg-zinc-700 text-zinc-400 rounded flex items-center justify-center font-semibold text-sm border border-zinc-600">
+                      <div className="flex-shrink-0 w-7 h-7 md:w-8 md:h-8 bg-zinc-700 text-zinc-400 rounded flex items-center justify-center font-semibold text-xs md:text-sm border border-zinc-600">
                         {pred.predictedPosition}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-zinc-200">{pred.driver.name}</p>
-                        <p className="text-sm text-zinc-500">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm md:text-base text-zinc-200 truncate">{pred.driver.name}</p>
+                        <p className="text-xs md:text-sm text-zinc-500">
                           {pred.driver.code}
                           {pred.driver.number && ` • #${pred.driver.number}`}
                         </p>
@@ -329,7 +329,7 @@ export default function AdminPredictionsPage() {
 
               <button
                 onClick={() => setSelectedUser(null)}
-                className="mt-6 w-full bg-zinc-800 text-zinc-300 py-2 rounded hover:bg-zinc-700 transition font-medium border border-zinc-700"
+                className="mt-6 w-full bg-zinc-800 text-zinc-300 py-2 rounded hover:bg-zinc-700 transition font-medium border border-zinc-700 text-sm md:text-base"
               >
                 Lukk
               </button>

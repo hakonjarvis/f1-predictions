@@ -45,27 +45,27 @@ type ExistingPrediction = {
 
 function ReadOnlyDriver({ driver, position }: { driver: Driver; position: number }) {
   return (
-    <div className="flex items-center gap-3 bg-zinc-800/50 border border-zinc-800 rounded p-3 mb-2">
-      <div className="flex-shrink-0 w-8 h-8 bg-zinc-700 text-zinc-400 rounded flex items-center justify-center font-semibold text-sm border border-zinc-600">
+    <div className="flex items-center gap-2 md:gap-3 bg-zinc-800/50 border border-zinc-800 rounded p-2 md:p-3 mb-2">
+      <div className="flex-shrink-0 w-7 h-7 md:w-8 md:h-8 bg-zinc-700 text-zinc-400 rounded flex items-center justify-center font-semibold text-xs md:text-sm border border-zinc-600">
         {position}
       </div>
       {driver.headshotUrl && (
         <img
           src={driver.headshotUrl}
           alt={driver.name}
-          className="w-10 h-10 rounded-full object-cover border border-zinc-700"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border border-zinc-700"
         />
       )}
-      <div className="flex-1">
-        <p className="font-medium text-zinc-200">{driver.name}</p>
-        <p className="text-sm text-zinc-500">{driver.team.name}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm md:text-base text-zinc-200 truncate">{driver.name}</p>
+        <p className="text-xs md:text-sm text-zinc-500 truncate">{driver.team.name}</p>
       </div>
-      <div className="text-right">
+      <div className="text-right flex-shrink-0">
         {driver.number && (
-          <span className="text-lg font-semibold text-zinc-400">#{driver.number}</span>
+          <span className="text-base md:text-lg font-semibold text-zinc-400">#{driver.number}</span>
         )}
         {driver.country && (
-          <p className="text-xs text-zinc-600">{driver.country}</p>
+          <p className="text-xs text-zinc-600 hidden sm:block">{driver.country}</p>
         )}
       </div>
     </div>
@@ -87,28 +87,28 @@ function SortableDriver({ driver, position }: { driver: Driver; position: number
       style={style}
       {...attributes}
       {...listeners}
-      className="flex items-center gap-3 bg-zinc-800/50 border border-zinc-800 rounded p-3 mb-2 cursor-grab hover:border-zinc-700 transition-colors"
+      className="flex items-center gap-2 md:gap-3 bg-zinc-800/50 border border-zinc-800 rounded p-2 md:p-3 mb-2 cursor-grab active:cursor-grabbing hover:border-zinc-700 transition-colors touch-none"
     >
-      <div className="flex-shrink-0 w-8 h-8 bg-zinc-700 text-zinc-400 rounded flex items-center justify-center font-semibold text-sm border border-zinc-600">
+      <div className="flex-shrink-0 w-7 h-7 md:w-8 md:h-8 bg-zinc-700 text-zinc-400 rounded flex items-center justify-center font-semibold text-xs md:text-sm border border-zinc-600">
         {position}
       </div>
       {driver.headshotUrl && (
         <img
           src={driver.headshotUrl}
           alt={driver.name}
-          className="w-10 h-10 rounded-full object-cover border border-zinc-700"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border border-zinc-700"
         />
       )}
-      <div className="flex-1">
-        <p className="font-medium text-zinc-200">{driver.name}</p>
-        <p className="text-sm text-zinc-500">{driver.team.name}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm md:text-base text-zinc-200 truncate">{driver.name}</p>
+        <p className="text-xs md:text-sm text-zinc-500 truncate">{driver.team.name}</p>
       </div>
-      <div className="text-right">
+      <div className="text-right flex-shrink-0">
         {driver.number && (
-          <span className="text-lg font-semibold text-zinc-400">#{driver.number}</span>
+          <span className="text-base md:text-lg font-semibold text-zinc-400">#{driver.number}</span>
         )}
         {driver.country && (
-          <p className="text-xs text-zinc-600">{driver.country}</p>
+          <p className="text-xs text-zinc-600 hidden sm:block">{driver.country}</p>
         )}
       </div>
     </div>
@@ -225,7 +225,7 @@ export default function NewPredictionPage() {
   // Show loading while checking auth or fetching drivers
   if (authLoading || loading) {
     return (
-      <div className="max-w-md mx-auto p-6 text-center">
+      <div className="max-w-md mx-auto p-4 md:p-6 text-center">
         <p className="text-zinc-400">Laster...</p>
       </div>
     );
@@ -239,18 +239,18 @@ export default function NewPredictionPage() {
   // Show existing prediction in read-only mode
   if (existingPrediction) {
     return (
-      <div className="max-w-2xl mx-auto p-6">
-        <div className="mb-6">
+      <div className="max-w-2xl mx-auto p-4 md:p-6">
+        <div className="mb-4 md:mb-6">
           <a
             href="/"
-            className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors inline-flex items-center gap-1"
+            className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors inline-flex items-center gap-1"
           >
             ← Tilbake
           </a>
         </div>
 
-        <h1 className="text-2xl font-semibold mb-2 text-white">Din prediction</h1>
-        <p className="text-zinc-400 mb-8 text-sm">
+        <h1 className="text-xl md:text-2xl font-semibold mb-2 text-white">Din prediction</h1>
+        <p className="text-zinc-400 mb-6 md:mb-8 text-sm">
           Du har allerede levert din prediction. Den kan ikke endres.
         </p>
 
@@ -279,16 +279,16 @@ export default function NewPredictionPage() {
           ))}
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <a
             href="/leaderboard"
-            className="flex-1 text-center bg-white text-black px-6 py-2.5 rounded hover:bg-zinc-200 transition font-medium"
+            className="flex-1 text-center bg-white text-black px-6 py-2.5 rounded hover:bg-zinc-200 transition font-medium text-sm md:text-base"
           >
             Se leaderboard
           </a>
           <a
             href="/"
-            className="flex-1 text-center bg-zinc-800 text-zinc-300 px-6 py-2.5 rounded hover:bg-zinc-700 transition font-medium border border-zinc-700"
+            className="flex-1 text-center bg-zinc-800 text-zinc-300 px-6 py-2.5 rounded hover:bg-zinc-700 transition font-medium border border-zinc-700 text-sm md:text-base"
           >
             Tilbake til hjem
           </a>
@@ -299,22 +299,22 @@ export default function NewPredictionPage() {
 
   if (submitted) {
     return (
-      <div className="max-w-md mx-auto p-6">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-semibold text-white mb-2">Takk!</h2>
-          <p className="text-zinc-400 mb-6">
+      <div className="max-w-md mx-auto p-4 md:p-6">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:p-8 text-center">
+          <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">Takk!</h2>
+          <p className="text-zinc-400 mb-6 text-sm md:text-base">
             Din prediction er lagret. Lykke til i konkurransen!
           </p>
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="/leaderboard"
-              className="inline-block bg-white text-black px-6 py-2 rounded hover:bg-zinc-200 transition font-medium"
+              className="inline-block bg-white text-black px-6 py-2 rounded hover:bg-zinc-200 transition font-medium text-sm md:text-base"
             >
               Se leaderboard
             </a>
             <a
               href="/"
-              className="inline-block bg-zinc-800 text-zinc-300 px-6 py-2 rounded hover:bg-zinc-700 transition font-medium border border-zinc-700"
+              className="inline-block bg-zinc-800 text-zinc-300 px-6 py-2 rounded hover:bg-zinc-700 transition font-medium border border-zinc-700 text-sm md:text-base"
             >
               Tilbake til hjem
             </a>
@@ -325,17 +325,17 @@ export default function NewPredictionPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="mb-6">
+    <div className="max-w-2xl mx-auto p-4 md:p-6">
+      <div className="mb-4 md:mb-6">
         <a
           href="/"
-          className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors inline-flex items-center gap-1"
+          className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors inline-flex items-center gap-1"
         >
           ← Tilbake
         </a>
       </div>
-      <h1 className="text-2xl font-semibold mb-2 text-white">Lag din prediction</h1>
-      <p className="text-zinc-400 mb-8 text-sm">
+      <h1 className="text-xl md:text-2xl font-semibold mb-2 text-white">Lag din prediction</h1>
+      <p className="text-zinc-400 mb-6 md:mb-8 text-sm">
         Dra og slipp for å rangere drivers i den rekkefølgen du tror de vil ende opp
         i championship
       </p>
@@ -377,12 +377,12 @@ export default function NewPredictionPage() {
       <button
         onClick={handleSubmit}
         disabled={submitting}
-        className="w-full bg-white text-black py-2.5 rounded hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition font-medium"
+        className="w-full bg-white text-black py-2.5 rounded hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition font-medium text-sm md:text-base"
       >
         {submitting ? "Lagrer..." : "Lagre prediction"}
       </button>
 
-      <p className="text-center text-xs text-zinc-600 mt-4">
+      <p className="text-center text-xs md:text-sm text-zinc-600 mt-4">
         Du kan kun sende inn én prediction. Den kan ikke endres etter innsending.
       </p>
     </div>

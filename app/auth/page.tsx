@@ -40,18 +40,18 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <div className="mb-6">
+    <div className="max-w-md mx-auto p-4 md:p-6">
+      <div className="mb-4 md:mb-6">
         <a
           href="/"
-          className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors inline-flex items-center gap-1"
+          className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors inline-flex items-center gap-1"
         >
           ← Tilbake
         </a>
       </div>
 
-      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-8">
-        <h1 className="text-2xl font-semibold text-white mb-2">
+      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6 md:p-8">
+        <h1 className="text-xl md:text-2xl font-semibold text-white mb-2">
           {isLogin ? 'Logg inn' : 'Opprett konto'}
         </h1>
         <p className="text-zinc-400 mb-6 text-sm">

@@ -114,9 +114,9 @@ export default function SyncPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-md mx-auto p-6">
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-8">
-          <h1 className="text-2xl font-semibold text-white mb-6">Admin Login</h1>
+      <div className="max-w-md mx-auto p-4 md:p-6">
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6 md:p-8">
+          <h1 className="text-xl md:text-2xl font-semibold text-white mb-6">Admin Login</h1>
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-zinc-400">
@@ -144,34 +144,34 @@ export default function SyncPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-white">Admin: Sync Data</h1>
-        <div className="flex gap-4">
+    <div className="max-w-4xl mx-auto p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+        <h1 className="text-xl md:text-2xl font-semibold text-white">Admin: Sync Data</h1>
+        <div className="flex gap-3 md:gap-4">
           <a
             href="/admin/predictions"
-            className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors"
+            className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors whitespace-nowrap"
           >
             Se Predictions →
           </a>
           <button
             onClick={logout}
-            className="text-zinc-400 hover:text-zinc-300 text-sm transition-colors"
+            className="text-zinc-400 hover:text-zinc-300 text-xs md:text-sm transition-colors"
           >
             Logout
           </button>
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Sync Drivers */}
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-          <h2 className="text-lg font-medium mb-2 text-white">Sync Drivers og Teams</h2>
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 md:p-6">
+          <h2 className="text-base md:text-lg font-medium mb-2 text-white">Sync Drivers og Teams</h2>
           <p className="text-zinc-400 text-sm mb-4">
             Henter alle aktive drivers og teams fra alle race-sesjoner for et gitt år.
           </p>
 
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 mb-4">
             <label className="text-sm font-medium text-zinc-400">År:</label>
             <input
               type="number"
@@ -186,7 +186,7 @@ export default function SyncPage() {
           <button
             onClick={syncDrivers}
             disabled={loading !== null}
-            className="bg-white text-black px-5 py-2 rounded hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition font-medium text-sm"
+            className="w-full sm:w-auto bg-white text-black px-5 py-2 rounded hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition font-medium text-sm"
           >
             {loading === 'drivers' ? 'Synkroniserer...' : 'Sync Drivers'}
           </button>
@@ -219,13 +219,13 @@ export default function SyncPage() {
         </div>
 
         {/* Sync Race Results */}
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-          <h2 className="text-lg font-medium mb-2 text-white">Sync Race Results</h2>
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 md:p-6">
+          <h2 className="text-base md:text-lg font-medium mb-2 text-white">Sync Race Results</h2>
           <p className="text-zinc-400 text-sm mb-4">
             Henter alle race-resultater for et gitt år.
           </p>
 
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 mb-4">
             <label className="text-sm font-medium text-zinc-400">År:</label>
             <input
               type="number"
@@ -240,7 +240,7 @@ export default function SyncPage() {
           <button
             onClick={syncRaceResults}
             disabled={loading !== null}
-            className="bg-white text-black px-5 py-2 rounded hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition font-medium text-sm"
+            className="w-full sm:w-auto bg-white text-black px-5 py-2 rounded hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition font-medium text-sm"
           >
             {loading === 'results' ? 'Synkroniserer...' : 'Sync Race Results'}
           </button>
@@ -279,7 +279,7 @@ export default function SyncPage() {
         </div>
 
         {/* Info Section */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 md:p-6">
           <h3 className="font-medium mb-2 text-white text-sm">Anbefalt rekkefølge:</h3>
           <ol className="list-decimal list-inside space-y-1 text-zinc-400 text-sm">
             <li>Sync Drivers først for å få alle drivers i databasen</li>
