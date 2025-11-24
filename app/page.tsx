@@ -1,8 +1,11 @@
 import { dbHelpers } from '@/lib/db'
 import { calculateTotalPoints, calculatePointsPerRace } from '@/lib/points'
+import { shouldRevealScores } from '@/lib/countdown'
 import Link from 'next/link'
+import Countdown from '@/components/Countdown'
 
 export default async function HomePage() {
+  const showScores = shouldRevealScores()
   // Hent topp 5 brukere for leaderboard preview
   const users = await dbHelpers.getAllUsersWithPredictions()
 
@@ -90,8 +93,11 @@ export default async function HomePage() {
             Se leaderboard
           </Link>
         </div>
-          {/* Leaderboard Preview */}
-          {leaderboard.length > 0 && (
+
+          {/* Countdown or Leaderboard Preview */}
+          {!showScores && <Countdown />}
+
+          {showScores && leaderboard.length > 0 && (
             <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden mb-8">
               <div className="border-b border-zinc-800 p-4 md:p-6">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1">Topp 5</h2>
@@ -163,7 +169,7 @@ export default async function HomePage() {
               </div>
             </div>
           )}
-        
+
       </div>
 
       {/* How it Works */}

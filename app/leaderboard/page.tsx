@@ -1,9 +1,13 @@
 import { dbHelpers } from '@/lib/db'
 import { calculateTotalPoints, calculatePointsPerRace } from '@/lib/points'
+import { shouldRevealScores } from '@/lib/countdown'
 import Link from 'next/link'
 import LeaderboardClient from './LeaderboardClient'
+import Countdown from '@/components/Countdown'
 
 export default async function LeaderboardPage() {
+  const showScores = shouldRevealScores()
+
   // Hent brukere med gjetninger og løpsresultater
   const users = await dbHelpers.getAllUsersWithPredictions()
 
@@ -38,7 +42,9 @@ export default async function LeaderboardPage() {
         </Link>
       </div>
 
-      {leaderboard.length === 0 ? (
+      {!showScores ? (
+        <Countdown />
+      ) : leaderboard.length === 0 ? (
         <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-8 md:p-12 text-center">
           <p className="text-zinc-400 text-base md:text-lg mb-4">
             Ingen predictions ennå. Vær den første til å levere!
